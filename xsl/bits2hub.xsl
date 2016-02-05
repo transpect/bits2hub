@@ -5,7 +5,7 @@
   xmlns:jats="http://jats.nlm.nih.gov"
   xmlns:bits2hub="http://transpect.io/bits2hub"
   xmlns:dbk="http://docbook.org/ns/docbook" 
-  xmlns:hub="http://www.le-tex.de/namespace/hub" 
+  xmlns:hub="http://transpect.io/hub" 
   xmlns:css="http://www.w3.org/1996/css" 
   xmlns:xlink="http://www.w3.org/1999/xlink"
   xmlns="http://docbook.org/ns/docbook" 
@@ -172,6 +172,7 @@
                        | front-matter-part
                        | permissions
                        | preface/named-book-part-body
+                       | dedication/named-book-part-body
                        | table-wrap
                        | title-group
                        | verse-group" mode="bits2hub-default">
@@ -190,6 +191,7 @@
                        | thead
                        | toc
                        | title
+                       | dedication
                        | xref[not(node())]" mode="bits2hub-default">
     <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -398,9 +400,9 @@
   </xsl:template>
   
   <xsl:template match="ref" mode="bits2hub-default">
-    <biliboentry>
+    <biblioentry>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </biliboentry>
+    </biblioentry>
   </xsl:template>
   
   <xsl:template match="inline-graphic" mode="bits2hub-default">
