@@ -131,7 +131,7 @@
     </appendix>
   </xsl:template>
   
-  <xsl:template match="sec" mode="bits2hub-default">
+  <xsl:template match="sec | preface/back" mode="bits2hub-default">
     <section>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </section>
@@ -162,8 +162,7 @@
   </xsl:template>
   
   <!-- just apply content elements -->
-  <xsl:template match="  app-group
-                       | body
+  <xsl:template match=" body
                        | book-back
                        | book-body
                        | book-part/body
@@ -171,7 +170,8 @@
                        | book-title-group
                        | front-matter-part
                        | permissions
-                       | preface/named-book-part-body
+                       | preface
+                       | foreword
                        | dedication/named-book-part-body
                        | table-wrap
                        | title-group
@@ -204,10 +204,10 @@
     </chapter>
   </xsl:template>
   
-  <xsl:template match="book-part[@book-part-type eq 'part']" mode="bits2hub-default">
+  <xsl:template match="book-part[@book-part-type eq 'part'] | app-group" mode="bits2hub-default">
     <part>
       <xsl:apply-templates select="@* except @book-part-type" mode="#current"/>
-      <xsl:if test="not(book-part-meta/title-group/title)">
+      <xsl:if test="not(book-part-meta/title-group/title) and not(*[1][self::title])">
         <title/>
       </xsl:if>
       <xsl:apply-templates select="node()" mode="#current"/>
@@ -226,7 +226,7 @@
     </part>
   </xsl:template>
   
-  <xsl:template match="front-matter-part/named-book-part-body" mode="bits2hub-default">
+  <xsl:template match="front-matter-part/named-book-part-body | foreword/named-book-part-body" mode="bits2hub-default">
     <preface>
       <xsl:attribute name="role" select="parent::front-matter-part/@book-part-type"/>
       <xsl:apply-templates select="@*" mode="#current"/>
@@ -465,6 +465,12 @@
     </honorific>
   </xsl:template>
   
+  <xsl:template match="suffix" mode="bits2hub-default">
+    <lineage>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </lineage>
+  </xsl:template>
+  
   <xsl:template match="  article-title 
                        | chapter-title 
                        | mixed-citation/source" mode="bits2hub-default">
@@ -503,7 +509,7 @@
                                    self::publisher-loc union following-sibling::publisher-loc" mode="bits2hub-default-publisher"/>
     </publisher>
   </xsl:template>
-  
+ 
   <xsl:template match="publisher-name" mode="bits2hub-default-publisher">
     <publishername>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -534,6 +540,10 @@
     <date>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </date>
+  </xsl:template>
+
+  <xsl:template match="etal" mode="bits2hub-default">
+      <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
   <xsl:template match="collab[*]" mode="bits2hub-default">
@@ -677,13 +687,20 @@
   <xsl:template match="index-term//term" mode="bits2hub-default">
     <xsl:variable name="context" as="element(term)" select="."/>
     <xsl:variable name="current-topmost-indexterm" as="element(index-term)" 
-      select="ancestor::index-term[not(parent::term)][1]"/>
+      select="ancestor::index-term[not(parent::index-term)][1]"/>
     <xsl:variable name="el-name" as="xs:string"
-      select="if(count(ancestor-or-self::term[ancestor::*[. is $current-topmost-indexterm]]) gt count($index-lvl-names)) 
+      select="if(count(ancestor-or-self::index-term) gt count($index-lvl-names)) 
               then 'bits2hub_unknown-index-lvl' 
               else $index-lvl-names[
-                     position() = count($context/ancestor-or-self::term[ancestor::*[. is $current-topmost-indexterm]])
-                   ]"/>
+              position() = count($context/ancestor-or-self::index-term)
+              ]"/>
+    
+    <!--<xsl:variable name="el-name" as="xs:string"
+      select="if(count(ancestor-or-self::index-term[. is $current-topmost-indexterm]) gt count($index-lvl-names)) 
+              then 'bits2hub_unknown-index-lvl' 
+              else $index-lvl-names[
+                     position() = count($context/ancestor-or-self::index-term[. is $current-topmost-indexterm])
+                   ]"/>-->
     <xsl:element name="{$el-name}">
       <xsl:apply-templates select="@*, node() except *[name() = ('index-term', 'see', 'see-also')]" mode="#current"/>
     </xsl:element>
