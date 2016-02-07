@@ -14,6 +14,7 @@
   <xsl:template match="/*" mode="bits2hub-default">
     <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:attribute name="css:rule-selection-attribute" select="'role'"/>
       <xsl:attribute name="version" select="'5.1-variant le-tex_Hub-1.2'"/>
       <info>
         <xsl:apply-templates select="book-meta/@*" mode="#current"/>
@@ -170,7 +171,7 @@
                        | book-title-group
                        | front-matter-part
                        | permissions
-                       | preface
+                       | preface/named-book-part-body
                        | foreword
                        | dedication/named-book-part-body
                        | table-wrap
