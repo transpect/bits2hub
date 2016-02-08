@@ -11,6 +11,9 @@
   xmlns="http://docbook.org/ns/docbook" 
   exclude-result-prefixes="css jats dbk xs">
   
+  <xsl:param name="s9y1-path-canonical"  as="xs:string?"/>
+  <xsl:param name="basename"  as="xs:string?"/>
+  
   <xsl:template match="/*" mode="bits2hub-default">
     <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@*" mode="#current"/>
@@ -410,7 +413,9 @@
     <inlinemediaobject>
       <xsl:apply-templates select="@* except @xlink:href, alt-text" mode="#current"/>
       <imageobject>
-        <imagedata fileref="{@xlink:href}"/>
+        <imagedata>
+          <xsl:apply-templates select="@xlink:href" mode="#current"/>
+        </imagedata>
       </imageobject>
     </inlinemediaobject>
   </xsl:template>
@@ -419,12 +424,16 @@
     <mediaobject>
       <xsl:apply-templates select="@* except @xlink:href, node()" mode="#current"/>
       <imageobject>
-        <imagedata fileref="{@xlink:href}"/>
+        <imagedata>
+          <xsl:apply-templates select="@xlink:href" mode="#current"/>
+        </imagedata>
       </imageobject>
     </mediaobject>
   </xsl:template>
   
-  
+  <xsl:template match="@xlink:href[parent::graphic | parent::inline-graphic]" mode="bits2hub-default">
+    <xsl:attribute name="fileref" select="."/>
+  </xsl:template>
   
   <xsl:template match="mixed-citation" mode="bits2hub-default">
     <bibliomixed>

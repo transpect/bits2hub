@@ -22,6 +22,7 @@
       import the default stylesheet http://transpect.io/bits2hub/xsl/bits2hub.xsl 
       in your project specific XSL file and overwrite templates to your needs.</p:documentation>
   </p:input>
+  <p:input port="paths" kind="parameter" primary="true"/>
   <p:output port="result" primary="true">
     <p:documentation>Hub XML document (version 1.2).</p:documentation>
     <p:pipe port="result" step="hub-with-model"/>
@@ -49,7 +50,9 @@
     <p:input port="stylesheet">
       <p:pipe port="stylesheet" step="bits2hub"/>
     </p:input>
-    <p:input port="parameters"><p:empty/></p:input>
+    <p:input port="parameters">
+      <p:pipe port="paths" step="bits2hub"/>
+    </p:input>
     <p:input port="models"><p:empty/></p:input>
     <p:with-option name="debug" select="$debug"/><!--<p:empty/></p:with-option>-->
     <p:with-option name="debug-dir-uri" select="$debug-dir-uri"/><!--<p:empty/></p:with-option>-->
@@ -59,12 +62,6 @@
     <p:with-option name="hub-version" select="'1.2'"/>
   </tr:prepend-hub-xml-model>
 
-  <tr:store-debug>
-    <p:with-option name="pipeline-step" select="'testi'"/>
-    <p:with-option name="active" select="$debug" />
-    <p:with-option name="base-uri" select="$debug-dir-uri" />
-  </tr:store-debug>
-  
   <tr:simple-progress-msg name="success-msg" file="bits2hub-success.txt">
     <p:input port="msgs">
       <p:inline>
