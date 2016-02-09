@@ -12,6 +12,7 @@
   exclude-result-prefixes="css jats dbk xs">
   
   <xsl:param name="s9y1-path-canonical"  as="xs:string?"/>
+  <xsl:param name="s9y1-path"  as="xs:string?"/>
   <xsl:param name="basename"  as="xs:string?"/>
   
   <xsl:template match="/*" mode="bits2hub-default">
