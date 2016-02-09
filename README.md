@@ -1,2 +1,2 @@
 # bits2hub
-BITS (Book Interchange Tag Set) to Hub conversion.
+BITS (Book Interchange Tag Suite) to Hub conversion.
