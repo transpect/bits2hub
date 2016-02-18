@@ -219,6 +219,8 @@
     </part>
   </xsl:template>
   
+  <xsl:template match="table-wrap/alternatives" mode="bits2hub-default"/>
+    
   <xsl:template match="book-part-meta" mode="bits2hub-default">
     <info>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
