@@ -407,9 +407,9 @@
   </xsl:template>
   
   <xsl:template match="ref" mode="bits2hub-default">
-    <biblioentry>
-      <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </biblioentry>
+<!--    <biblioentry>-->
+      <xsl:apply-templates mode="#current"/>
+    <!--</biblioentry>-->
   </xsl:template>
   
   <xsl:template match="inline-graphic" mode="bits2hub-default">
@@ -440,7 +440,7 @@
   
   <xsl:template match="mixed-citation" mode="bits2hub-default">
     <bibliomixed>
-      <xsl:apply-templates select="@*, node()" mode="#current"/>
+      <xsl:apply-templates select="parent::ref/@*, @*, node()" mode="#current"/>
     </bibliomixed>
   </xsl:template>
   
