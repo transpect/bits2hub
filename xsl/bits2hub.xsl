@@ -23,11 +23,16 @@
       <info>
         <xsl:apply-templates select="book-meta/@*" mode="#current"/>
         <xsl:call-template name="create-hub-keywordset"/>
-        <xsl:apply-templates select="book-meta/node()" mode="#current"/>
+        <xsl:apply-templates select="book-meta" mode="#current"/>
       </info>
       <xsl:apply-templates select="node() except book-meta" mode="#current"/>
     </xsl:element>
   </xsl:template>
+  
+  <xsl:template match="book-meta" mode="bits2hub-default">
+      <xsl:apply-templates select="node()" mode="#current"/>
+  </xsl:template>
+  
   
   <xsl:template name="create-hub-keywordset">
     <keywordset role="hub">
@@ -45,6 +50,10 @@
     <keywordset>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </keywordset>
+  </xsl:template>
+  
+  <xsl:template match="custom-meta-group[css:rules]" mode="bits2hub-default">
+      <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
   <xsl:template match="custom-meta" mode="bits2hub-default">
@@ -142,7 +151,7 @@
     </section>
   </xsl:template>
   
-  <xsl:template match="*[self::sec or self::title-group][label]/title" mode="bits2hub-default">
+  <xsl:template match="*[self::sec | self::title-group | self::ref-list][label]/title" mode="bits2hub-default" priority="3">
     <title>
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:apply-templates select="parent::*/label" mode="#current">
@@ -151,8 +160,9 @@
       <xsl:apply-templates select="node()" mode="#current"/>
     </title>
   </xsl:template>
+
   
-  <xsl:template match="*[self::sec or self::title-group][title]/label" mode="bits2hub-default">
+  <xsl:template match="*[self::sec or self::title-group or self::ref-list][title]/label" mode="bits2hub-default">
     <xsl:param name="render" select="false()"/>
     <xsl:if test="$render">
       <phrase role="hub:identifier">
@@ -176,7 +186,8 @@
                        | front-matter-part
                        | permissions
                        | preface/named-book-part-body
-                       | foreword
+                       | foreword/named-book-part-body
+                       | front-matter-part/named-book-part-body
                        | dedication/named-book-part-body
                        | table-wrap
                        | title-group
@@ -228,21 +239,23 @@
   </xsl:template>
   
   <xsl:template match="front-matter" mode="bits2hub-default">
-    <part role="front-matter">
+<!--    <part role="front-matter">-->
       <xsl:apply-templates select="@*, node()" mode="#current"/>
-    </part>
+    <!--</part>-->
   </xsl:template>
   
-  <xsl:template match="front-matter-part/named-book-part-body | foreword/named-book-part-body" mode="bits2hub-default">
+  <xsl:template match="front-matter-part | foreword" mode="bits2hub-default">
     <preface>
-      <xsl:attribute name="role" select="parent::front-matter-part/@book-part-type"/>
+      <xsl:attribute name="role" select="@book-part-type"/>
       <xsl:apply-templates select="@*" mode="#current"/>
-      <title/>
+      <xsl:if test="not(book-part-meta/title-group/title) and not(*[1][self::title])">
+        <title/>
+      </xsl:if>
       <xsl:apply-templates select="node()" mode="#current"/>
     </preface>
   </xsl:template>
   
-  <xsl:template match="front-matter-part[named-book-part-body]/@book-part-type" mode="bits2hub-default"/>
+  <xsl:template match="front-matter-part[named-book-part-body]/@book-part-type | foreword/@book-part-type" mode="bits2hub-default" priority="4"/>
   
   <xsl:template match="copyright-statement" mode="bits2hub-default">
     <legalnotice>
@@ -290,14 +303,21 @@
     </colspec>
   </xsl:template>
   
+  <xsl:template match="col/@width" mode="bits2hub-default">
+    <xsl:attribute name="colwidth" select="."/>
+  </xsl:template>
+  
   <xsl:template match="table" mode="bits2hub-default">
-    <table>
+    <xsl:element name="{if (parent::*/caption[title]) then 'table' else 'informaltable'}">
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:apply-templates select="parent::*/caption" mode="#current">
         <xsl:with-param name="render" select="true()"/>
       </xsl:apply-templates>
-      <xsl:apply-templates select="node()" mode="#current"/>
-    </table>
+      <tgroup>
+        <xsl:attribute name="cols" select="count(colgroup/col)"/>
+        <xsl:apply-templates select="node()" mode="#current"/>
+      </tgroup>
+    </xsl:element>
   </xsl:template>
   
   <xsl:template match="table/@width" mode="bits2hub-default">
@@ -523,6 +543,13 @@
     </publisher>
   </xsl:template>
  
+  <xsl:template match="  mixed-citation/publisher-loc 
+                       | mixed-citation/publisher-name 
+                       | element-citation/publisher-loc 
+                       | element-citation/publisher-name" mode="bits2hub-default" priority="3">
+    <xsl:apply-templates select="." mode="bits2hub-default-publisher"/>
+  </xsl:template>
+  
   <xsl:template match="publisher-name" mode="bits2hub-default-publisher">
     <publishername>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -587,6 +614,12 @@
     <annotation>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </annotation>
+  </xsl:template>
+  
+  <xsl:template match="mixed-citation//comment" mode="bits2hub-default" priority="3">
+    <phrase>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </phrase>
   </xsl:template>
   
   <xsl:template match="comment[every $n in node() satisfies $n instance of text()]" mode="bits2hub-default" priority="1">
