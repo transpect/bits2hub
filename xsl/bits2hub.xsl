@@ -297,10 +297,6 @@
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
   
-  <xsl:template match="list-item/p[every $child in node() satisfies ($child[self::fig | self::boxed-text | self::table]) ]" mode="bits2hub-default">
-    <xsl:apply-templates mode="#current"/>
-  </xsl:template>
-  
   <xsl:template match="col" mode="bits2hub-default">
     <colspec>
       <xsl:apply-templates select="@*" mode="#current"/>
@@ -391,8 +387,46 @@
   
   <xsl:template match="list-item" mode="bits2hub-default">
     <listitem>
-      <xsl:apply-templates select="@*, label, node() except label" mode="#current"/>
+      <xsl:apply-templates select="@*, label, node() except label" mode="#current">
+        <xsl:with-param name="first-list-para" select="true()" as="xs:boolean"/>
+      </xsl:apply-templates>
     </listitem>
+  </xsl:template>
+  
+  <xsl:template match="list-item[count(p) gt 1]" mode="bits2hub-default" priority="3">
+    <listitem>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:apply-templates select="label" mode="#current"/>
+      <xsl:apply-templates select="p[1]" mode="#current">
+        <xsl:with-param name="first-list-para" select="true()" as="xs:boolean"/>
+      </xsl:apply-templates>
+    </listitem>
+  </xsl:template>
+  
+  <xsl:template match="list-item/p" mode="bits2hub-default">
+    <xsl:param name="first-list-para" as="xs:boolean?"/>
+    <xsl:choose>
+      <xsl:when test="$first-list-para">
+        <para>
+          <xsl:apply-templates select="@*, node()" mode="#current"/>
+          <xsl:apply-templates select="following-sibling::node()" mode="#current">
+            <xsl:with-param name="first-list-para" select="false()" as="xs:boolean"/>
+          </xsl:apply-templates>
+        </para>
+      </xsl:when>
+      <xsl:otherwise>
+        <br/>
+        <xsl:apply-templates select="node()" mode="#current"/>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+  
+  <xsl:template match="list-item/p[every $child in node() satisfies ($child[self::fig | self::boxed-text | self::table]) ]" mode="bits2hub-default">
+    <xsl:param name="first-list-para" as="xs:boolean?"/>
+    <xsl:if test="not($first-list-para)">
+      <br/>
+    </xsl:if>
+    <xsl:apply-templates mode="#current"/>
   </xsl:template>
   
   <xsl:template match="list-item/label" mode="bits2hub-default">
