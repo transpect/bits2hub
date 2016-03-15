@@ -311,6 +311,9 @@
   <xsl:template match="table" mode="bits2hub-default">
     <xsl:element name="{if (parent::*/caption[title]) then 'table' else 'informaltable'}">
       <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:if test="not(@content-type)">
+        <xsl:attribute name="role" select="'None'"/>
+      </xsl:if>
       <xsl:apply-templates select="parent::*/caption/title" mode="#current">
         <xsl:with-param name="render" select="true()"/>
       </xsl:apply-templates>
@@ -560,8 +563,8 @@
     </lineage>
   </xsl:template>
   
-  <xsl:template match="  article-title 
-                       | chapter-title 
+  <xsl:template match="  article-title
+                       | chapter-title
                        | mixed-citation/source" mode="bits2hub-default">
     <citetitle>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
@@ -758,7 +761,17 @@
           <xsl:apply-templates select="label" mode="#current"/>
         </title>
       </xsl:if>
-      <xsl:apply-templates select="node()" mode="#current"/>
+      <xsl:apply-templates select="caption/title" mode="#current">
+        <xsl:with-param name="render" select="true()"/>
+      </xsl:apply-templates>
+      <xsl:apply-templates select="node() except caption" mode="#current"/>
+      <xsl:if test="caption[not(every $n in * satisfies $n/self::title)]">
+        <caption>
+          <xsl:apply-templates select="caption/node()[not(self::title | self::label)]" mode="#current">
+            <xsl:with-param name="render" select="false()"/>
+          </xsl:apply-templates>
+        </caption>
+      </xsl:if>
     </figure>
   </xsl:template>
   
