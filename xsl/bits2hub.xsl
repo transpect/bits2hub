@@ -412,7 +412,7 @@
       <xsl:when test="$first-list-para">
         <para>
           <xsl:apply-templates select="@*, node()" mode="#current"/>
-          <xsl:apply-templates select="following-sibling::node()" mode="#current">
+          <xsl:apply-templates select="following-sibling::node()[self::p]" mode="#current">
             <xsl:with-param name="first-list-para" select="false()" as="xs:boolean"/>
           </xsl:apply-templates>
         </para>
