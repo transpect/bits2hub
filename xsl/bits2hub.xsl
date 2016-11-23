@@ -564,19 +564,37 @@
   </xsl:template>
   
   <xsl:template match="  article-title
-                       | chapter-title
-                       | mixed-citation/source" mode="bits2hub-default">
+                       | chapter-title" mode="bits2hub-default">
     <citetitle>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </citetitle>
   </xsl:template>
   
-  <xsl:template match="volume" mode="bits2hub-default">
+    
+  <xsl:template match=" mixed-citation/source" mode="bits2hub-default">
+    <title>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </title>
+  </xsl:template>
+	
+  <xsl:template match="mixed-citation/volume" mode="bits2hub-default">
     <seriesvolnums>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </seriesvolnums>
   </xsl:template>
+	
+	<xsl:template match="series" mode="bits2hub-default">
+    <phrase role="series">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </phrase>
+  </xsl:template>
   
+  <xsl:template match="mixed-citation/series" mode="bits2hub-default">
+    <subtitle>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </subtitle>
+  </xsl:template>
+	
   <xsl:template match="book-volume-number" mode="bits2hub-default">
     <volumenum>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
