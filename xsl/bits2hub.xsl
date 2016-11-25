@@ -751,13 +751,13 @@
     </superscript>
   </xsl:template>
   
-  <xsl:template match="styled-content" mode="bits2hub-default">
+  <xsl:template match="styled-content | named-content" mode="bits2hub-default">
     <phrase>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </phrase>
   </xsl:template>
   
-  <xsl:template match="styled-content/@style-type" mode="bits2hub-default">
+  <xsl:template match="styled-content/@style-type | named-content/@content-type" mode="bits2hub-default">
     <xsl:attribute name="role" select="."/>
   </xsl:template>
 
