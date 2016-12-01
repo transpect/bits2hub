@@ -33,6 +33,20 @@
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
+<!--  <speech><speaker><italic>Speaker</italic></speaker><p>Speech</p></speech> -->
+  <xsl:template match="speech" mode="bits2hub-default">
+    <para>
+      <xsl:apply-templates select="p[1]/@*, speaker, p[1]/node()" mode="#current"/>
+      <xsl:apply-templates select="p[not(. is ../p[1])]" mode="#current"/>
+    </para>
+   </xsl:template>
+  
+   <xsl:template match="speaker" mode="bits2hub-default">
+     <phrase role="speaker">
+       <xsl:apply-templates select="@*, node()" mode="#current"/>
+     </phrase>
+     <tab/>
+   </xsl:template>
   
   <xsl:template name="create-hub-keywordset">
     <keywordset role="hub">
@@ -273,6 +287,12 @@
     <sidebar>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </sidebar>
+  </xsl:template>
+  
+  <xsl:template match="ack" mode="bits2hub-default">
+    <acknowledgements>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </acknowledgements>
   </xsl:template>
   
   <xsl:template match="p" mode="bits2hub-default">
