@@ -37,8 +37,8 @@
   <xsl:template match="speech" mode="bits2hub-default">
     <para>
       <xsl:apply-templates select="p[1]/@*, speaker, p[1]/node()" mode="#current"/>
-      <xsl:apply-templates select="p[not(. is ../p[1])]" mode="#current"/>
     </para>
+    <xsl:apply-templates select="p[not(. is ../p[1])]" mode="#current"/>
    </xsl:template>
   
    <xsl:template match="speaker" mode="bits2hub-default">
