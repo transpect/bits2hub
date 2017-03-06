@@ -29,7 +29,7 @@
     </xsl:element>
   </xsl:template>
   
-  <xsl:template match="book-meta" mode="bits2hub-default">
+  <xsl:template match="book-meta | sec-meta" mode="bits2hub-default">
       <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
@@ -739,6 +739,10 @@
       </xsl:if>
       <xsl:apply-templates select="@* except @pub-id-type, node()" mode="#current"/>
     </citebiblioid>
+  </xsl:template>
+  
+  <xsl:template match="uri[ext-link]" mode="bits2hub-default">
+      <xsl:apply-templates select="node()" mode="#current"/>
   </xsl:template>
   
   <xsl:template match="verse-line" mode="bits2hub-default">
