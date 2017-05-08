@@ -933,7 +933,7 @@
   </xsl:template>
   
   <!-- catch all -->
-  <xsl:template match="@* | node()" mode="bits2hub-default" priority="-5">
+  <xsl:template match="@* | node()" mode="#all" priority="-5">
     <xsl:copy>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:copy>

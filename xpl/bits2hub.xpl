@@ -28,6 +28,10 @@
     <p:pipe port="result" step="hub-with-model"/>
   </p:output>
   <p:serialization port="result" encoding="UTF-8" omit-xml-declaration="false"/>
+  <p:output port="report" sequence="true">
+    <p:documentation>Report document</p:documentation>
+    <p:pipe port="report" step="bits2hub-default"/>
+  </p:output>
   
   <p:import href="http://xmlcalabash.com/extension/steps/library-1.0.xpl" />
   <p:import href="http://transpect.io/xproc-util/xslt-mode/xpl/xslt-mode.xpl"/>
@@ -46,7 +50,7 @@
     <p:with-option name="status-dir-uri" select="$status-dir-uri"/>
   </tr:simple-progress-msg>
   
-  <tr:xslt-mode prefix="bits2hub" mode="bits2hub-default">
+  <tr:xslt-mode prefix="bits2hub" mode="bits2hub-default" name="bits2hub-default">
     <p:input port="stylesheet">
       <p:pipe port="stylesheet" step="bits2hub"/>
     </p:input>
