@@ -14,7 +14,7 @@
   <xsl:param name="s9y1-path-canonical"  as="xs:string?"/>
   <xsl:param name="s9y1-path"  as="xs:string?"/>
   <xsl:param name="basename"  as="xs:string?"/>
-  
+
   <xsl:template match="/*" mode="bits2hub-default">
     <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@*" mode="#current"/>
@@ -197,7 +197,6 @@
                        | book-part/body
                        | book-part/back
                        | book-title-group
-                       | front-matter-part
                        | permissions
                        | preface/named-book-part-body
                        | foreword/named-book-part-body
