@@ -312,6 +312,8 @@
     </entry>
   </xsl:template>
   
+   <xsl:template match="td/text()[matches(., '^\p{Zs}*$')] | th/text()[matches(., '^\p{Zs}*$')]" mode="bits2hub-default"/>
+  
   <xsl:template match="colgroup" mode="bits2hub-default">
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
