@@ -359,7 +359,7 @@
   </xsl:template>
   
   <xsl:template match="*[table]/caption" mode="bits2hub-default" priority="1">
-    <xsl:param name="render" select="false()"/>
+    <xsl:param name="render" as="xs:boolean?"/>
     <xsl:if test="$render">
       <xsl:next-match/>
     </xsl:if>
