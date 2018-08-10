@@ -159,9 +159,13 @@
     </appendix>
   </xsl:template>
   
-  <xsl:template match="sec | preface/back" mode="bits2hub-default">
+  <xsl:template match="sec | preface/back | foreword/back" mode="bits2hub-default">
     <section>
-      <xsl:apply-templates select="@*, node()" mode="#current"/>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:if test="self::back">
+        <xsl:attribute name="role" select="concat(parent::*/name(), '-back')"/>
+      </xsl:if>
+      <xsl:apply-templates select="node()" mode="#current"/>
     </section>
   </xsl:template>
   
