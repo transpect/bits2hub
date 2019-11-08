@@ -217,7 +217,6 @@
                        | edition
                        | glossary
                        | index
-                       | preface
                        | see
                        | subtitle
                        | tbody
@@ -229,6 +228,12 @@
     <xsl:element name="{local-name()}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </xsl:element>
+  </xsl:template>
+  
+  <xsl:template match="alt-title" mode="bits2hub-default">
+    <titleabbrev>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </titleabbrev>
   </xsl:template>
   
   <xsl:template match="book-part[@book-part-type eq 'chapter']" mode="bits2hub-default">
@@ -247,7 +252,7 @@
     </part>
   </xsl:template>
   
-  <xsl:template match="table-wrap/alternatives" mode="bits2hub-default"/>
+  <xsl:template match="table-wrap/alternatives" mode="bits2hub-default" priority="2"/>
     
   <xsl:template match="book-part-meta" mode="bits2hub-default">
     <info>
@@ -261,7 +266,7 @@
     <!--</part>-->
   </xsl:template>
   
-  <xsl:template match="front-matter-part | foreword" mode="bits2hub-default">
+  <xsl:template match="front-matter-part | foreword | preface" mode="bits2hub-default">
     <preface>
       <xsl:attribute name="role" select="@book-part-type"/>
       <xsl:apply-templates select="@*" mode="#current"/>
@@ -272,7 +277,7 @@
     </preface>
   </xsl:template>
   
-  <xsl:template match="front-matter-part[named-book-part-body]/@book-part-type | foreword/@book-part-type" mode="bits2hub-default" priority="4"/>
+  <xsl:template match="front-matter-part[named-book-part-body]/@book-part-type | foreword/@book-part-type | preface/@book-part-type" mode="bits2hub-default" priority="4"/>
   
   <xsl:template match="copyright-statement" mode="bits2hub-default">
     <legalnotice>
@@ -335,7 +340,7 @@
   
   <xsl:template match="table" mode="bits2hub-default">
     <xsl:element name="{if (parent::*/caption[title]) then 'table' else 'informaltable'}">
-      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:apply-templates select="../@*, @*" mode="#current"/>
       <xsl:if test="not(@content-type)">
         <xsl:attribute name="role" select="'None'"/>
       </xsl:if>
@@ -761,6 +766,10 @@
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </footnote>
   </xsl:template>
+
+  <xsl:template match="fn/@symbol" mode="bits2hub-default">
+    <xsl:attribute name="label" select="."/>
+  </xsl:template>
   
   <xsl:template match="alt-text" mode="bits2hub-default">
     <alt>
@@ -786,7 +795,7 @@
     </phrase>
   </xsl:template>
   
-  <xsl:template match="styled-content/@style-type | named-content/@content-type" mode="bits2hub-default">
+  <xsl:template match="styled-content/@style-type | named-content/@content-type | @sec-type" mode="bits2hub-default">
     <xsl:attribute name="role" select="."/>
   </xsl:template>
 
@@ -796,8 +805,8 @@
     </link>
   </xsl:template>
   
-  <xsl:template match="xref[node()]/@rid" mode="bits2hub-default">
-    <xsl:attribute name="linkend" select="."/>
+  <xsl:template match="xref/@rid" mode="bits2hub-default">
+    <xsl:attribute name="{if (contains(., ' ')) then 'linkends' else 'linkend'}" select="."/>
   </xsl:template>
   
   <xsl:template match="fig" mode="bits2hub-default">
@@ -832,10 +841,24 @@
     <xsl:attribute name="role" select="."/>
   </xsl:template>
   
-  <xsl:template match="index-term" mode="bits2hub-default">
+  <xsl:template match="index-term " mode="bits2hub-default">
     <indexterm>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </indexterm>
+  </xsl:template>
+  
+  <xsl:template match="index-term-range-end " mode="bits2hub-default">
+    <indexterm class="endofrange">
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </indexterm>
+  </xsl:template>
+  
+   <xsl:template match="index-term-range-end/@rid " mode="bits2hub-default">
+    <xsl:attribute name="startref" select="."/>
+  </xsl:template>
+  
+  <xsl:template match="index-term-range-end/@id " mode="bits2hub-default">
+    <xsl:attribute name="xml:id" select="."/>
   </xsl:template>
   
   <xsl:template match="index-term//index-term" mode="bits2hub-default">
@@ -879,7 +902,8 @@
   <xsl:template match="  bold 
                       | italic 
                       | strike 
-                      | underline" mode="bits2hub-default">
+                      | underline
+                      | sc" mode="bits2hub-default">
     <emphasis role="{local-name()}">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </emphasis>
@@ -893,6 +917,29 @@
     <anchor>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </anchor>
+  </xsl:template>
+  
+  <xsl:template match="inline-formula" mode="bits2hub-default">
+    <inlineequation>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </inlineequation>
+  </xsl:template>
+  
+  <xsl:template match="inline-formula/alternatives" mode="bits2hub-default" priority="2">
+    <alt>
+      <xsl:apply-templates select="@*, node() except textual-form" mode="#current"/>
+    </alt>
+    <xsl:apply-templates select="textual-form" mode="#current"/>
+  </xsl:template>
+
+  <xsl:template match="inline-formula/alternatives/tex-math" mode="bits2hub-default">
+    &lt;![CDATA<xsl:value-of select="node()" disable-output-escaping="yes"/>]]&gt;
+  </xsl:template>
+  
+  <xsl:template match="inline-formula/alternatives/textual-form" mode="bits2hub-default">
+    <mathphrase>
+      <xsl:apply-templates select="@*, node()" mode="#current"/>
+    </mathphrase>
   </xsl:template>
   
   <!-- just copy attributes -->
@@ -921,6 +968,10 @@
   
   <xsl:template match="@specific-use" mode="bits2hub-default">
     <xsl:attribute name="annotations" select="."/>
+  </xsl:template>
+  
+  <xsl:template match="xref/@specific-use" mode="bits2hub-default" priority="2">
+    <xsl:attribute name="xrefstyle" select="."/>
   </xsl:template>
   
   <xsl:template match="@dtd-version" mode="bits2hub-default"/>
