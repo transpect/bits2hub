@@ -847,6 +847,17 @@
     </indexterm>
   </xsl:template>
   
+  <xsl:template match="index-term/@content-type" mode="bits2hub-default">
+    <xsl:attribute name="type" select="."/>
+  </xsl:template>
+
+  <xsl:variable name="fallback-index-type" select="'subject'"/>
+
+  <xsl:template match="index-term/@id" mode="bits2hub-default" priority="3">
+    <xsl:next-match/>
+    <xsl:if test="..[empty(@content-type)]"><xsl:attribute name="type" select="$fallback-index-type"/></xsl:if>
+  </xsl:template>
+  
   <xsl:template match="index-term-range-end " mode="bits2hub-default">
     <indexterm class="endofrange">
       <xsl:apply-templates select="@*, node()" mode="#current"/>
