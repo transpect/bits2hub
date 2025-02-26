@@ -848,17 +848,23 @@
   </xsl:template>
   
   <xsl:template match="index-term/@content-type" mode="bits2hub-default">
+    <xsl:attribute name="role" select="if (matches(., '^(page-num-)?(bold|italic|bolditalic)$')) 
+                                       then replace(., '^(page-num-)?(bold|italic|bolditalic)$', 'hub:page-num-$2') 
+                                       else ."/>
+  </xsl:template>
+  
+  <xsl:template match="index-term/@index-type" mode="bits2hub-default">
     <xsl:attribute name="type" select="."/>
   </xsl:template>
 
   <xsl:variable name="fallback-index-type" select="'subject'"/>
-  <xsl:variable name="create-default-index-type" select="if (distinct-values(//index-term/@content-type) ge 1) 
+  <xsl:variable name="create-default-index-type" select="if (distinct-values(//index-term/@index-type) ge 1) 
                                                          then true() 
                                                          else false()" as="xs:boolean"/>
 
   <xsl:template match="index-term/@id" mode="bits2hub-default" priority="3">
     <xsl:next-match/>
-    <xsl:if test="..[empty(@content-type)] and $create-default-index-type">
+    <xsl:if test="..[empty(@index-type)] and $create-default-index-type">
       <xsl:attribute name="type" select="$fallback-index-type"/>
     </xsl:if>
   </xsl:template>
