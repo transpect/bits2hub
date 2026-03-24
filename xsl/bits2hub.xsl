@@ -159,13 +159,22 @@
     </appendix>
   </xsl:template>
   
-  <xsl:template match="sec | preface/back | foreword/back" mode="bits2hub-default">
+  <xsl:template match="preface/back | foreword/back" mode="bits2hub-default">
     <section>
       <xsl:apply-templates select="@*" mode="#current"/>
-      <xsl:if test="self::back">
         <xsl:attribute name="role" select="concat(parent::*/name(), '-back')"/>
-      </xsl:if>
       <xsl:apply-templates select="node()" mode="#current"/>
+    </section>
+  </xsl:template>
+  
+  <xsl:template match="sec" mode="bits2hub-default">
+    <xsl:variable name="info-contents" select="label, title, alt-title, subtitle, sec-meta, object-id"/>
+    <section>
+      <xsl:apply-templates select="@*" mode="#current"/>
+      <xsl:if test="exists($info-contents)">   
+        <info> <xsl:apply-templates select="$info-contents" mode="#current"/></info>
+      </xsl:if>
+      <xsl:apply-templates select="node() except $info-contents" mode="#current"/>
     </section>
   </xsl:template>
   
