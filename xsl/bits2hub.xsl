@@ -153,7 +153,7 @@
     </personblurb>
   </xsl:template>
   
-  <xsl:template match="app" mode="bits2hub-default">
+  <xsl:template match="app|book-app" mode="bits2hub-default">
     <appendix>
       <xsl:apply-templates select="@*, node()" mode="#current"/>
     </appendix>
@@ -178,7 +178,7 @@
     </section>
   </xsl:template>
   
-  <xsl:template match="*[self::sec | self::title-group | self::ref-list][label]/title" mode="bits2hub-default" priority="3">
+  <xsl:template match="*[self::sec | self::title-group | self::toc-title-group | self::index-title-group |self::ref-list][label]/title" mode="bits2hub-default" priority="3">
     <title>
       <xsl:apply-templates select="@*" mode="#current"/>
       <xsl:apply-templates select="parent::*/label" mode="#current">
@@ -189,7 +189,7 @@
   </xsl:template>
 
   
-  <xsl:template match="*[self::sec or self::title-group or self::ref-list][title]/label" mode="bits2hub-default">
+  <xsl:template match="*[self::sec or self::title-group or  self::toc-title-group or self::index-title-group or self::ref-list][title]/label" mode="bits2hub-default">
     <xsl:param name="render" select="false()"/>
     <xsl:if test="$render">
       <phrase role="hub:identifier">
@@ -217,6 +217,8 @@
                        | dedication/named-book-part-body
                        | table-wrap
                        | title-group
+                       | toc-title-group 
+                       | index-title-group
                        | verse-group" mode="bits2hub-default">
     <xsl:apply-templates mode="#current"/>
   </xsl:template>
@@ -251,7 +253,7 @@
     </chapter>
   </xsl:template>
   
-  <xsl:template match="book-part[@book-part-type eq 'part'] | app-group" mode="bits2hub-default">
+  <xsl:template match="book-part[@book-part-type eq 'part'] | app-group | book-app-group" mode="bits2hub-default">
     <part>
       <xsl:apply-templates select="@* except @book-part-type" mode="#current"/>
       <xsl:if test="not(book-part-meta/title-group/title) and not(*[1][self::title])">
